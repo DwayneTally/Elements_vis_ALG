@@ -10,7 +10,6 @@ library(ggplot2)
 library(gtools)
 library(ggtext)
 suppressPackageStartupMessages(library(Biostrings))
-suppressPackageStartupMessages(library(writexl))
 
 
 option_list = list(
@@ -161,5 +160,4 @@ summary_list <- list(
   Stevens_Detailed = stevensAggregatedStats
 )
 
-write_xlsx(summary_list, path = "stevens_summary.xlsx")
-
+write.csv(summary_list, "stevens_summary.csv", row.names = FALSE)

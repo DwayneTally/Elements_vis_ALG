@@ -6,6 +6,8 @@ The color has also been redone to reflect the color scheme in Ryan et al (2024) 
 The threshold option takes numbers between 0-1 from the user and assigns that value as the threshold for the ratio of stevens elements per chromosome and renames the label based on that. 
 I.E. if one chromosome is 90% Stevens B and 10% Stevens X and the user set the threshold to 0.1 then the new label stevens element label for that chromosme will be B/X.  
 
+NOTE* to run Element_calculations.R using the below line as an example then you'd need to unzip the fna file.
+
 Rscript Element_calculations.R -b ./Example/BUSCO/full_table.tsv -c ./data/stevens.tsv -f ./Example/fna/Tribolium_castaneum_GCF_000002335.3_genomic.fna
 
 Element_calculations is a new helper script to do some quick statistical analysis on the genome. It takes in the same parameters as Stevens_vis but with the added option for fasta files. It outputs a multi sheet excel file.

@@ -8,6 +8,6 @@ I.E. if one chromosome is 90% Stevens B and 10% Stevens X and the user set the t
 
 Rscript Element_calculations.R -b ./Example/BUSCO/full_table.tsv -c ./data/stevens.tsv -f ./Example/fna/Tribolium_castaneum_GCF_000002335.3_genomic.fna
 
-Stevens_calculaitons is a new helper script to do some quick statistical analysis on the genome. It takes in the same parameters as Stevens_vis but with the added option for fasta files. It outputs a multi sheet excel file.
-The first sheet shows length, number of sequences, average, min, max, and sd length of the sequences (in bp, so far) and GC%. The second page is breaks down the squences by giving you the total number of genes in the sequence and
+Element_calculations is a new helper script to do some quick statistical analysis on the genome. It takes in the same parameters as Stevens_vis but with the added option for fasta files. It outputs a multi sheet excel file.
+The first sheet shows length, number of sequences, average, min, max, and sd length of the sequences (in bp) and GC%. The second page is breaks down the squences by giving you the total number of genes in the sequence and
 how many genes that are associated with a specific stevens element are within that sequence, and the overall ratio of which stevens elements make up that chromosomes. The last page is a more detailed look of the second page where it gives number of genes, sequence length, start mean, end mean, start sd, end sd, start min, start max, end min, end max.

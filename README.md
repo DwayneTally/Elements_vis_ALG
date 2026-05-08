@@ -26,3 +26,6 @@ Rscript Element_calculations.R -b full_table.tsv -c stevens.tsv -f species.fna
 Rscript element_vis.R -b ./Example/BUSCO/full_table.tsv -c ./data/stevens.tsv -s T.castaneum -o T.castaneum.pdf --stacked --stackedOutPlot T.castaneum_stacked.pdf --threshold 0.1
 
 
+Rscript element_vis.R -b ./Example/BUSCO/full_table.tsv -c ./data/stevens.tsv -s T.castaneum -o T.castaneum.pdf --stacked --stackedOutPlot T.castaneum_stacked.pdf --threshold 0.1
+
+Rscript element_vis.R -b ./Example/BUSCO/full_table.tsv -c ./data/stevens.tsv -s T.castaneum -o T.castaneum.pdf --threshold 0.1 -f Tribolium_castaneum_GCF_000002335.3_genomic.fna

@@ -243,6 +243,7 @@ Rscript element_vis.R \
 ```
 
 ## Options
+```bash
   "-b", "--busco", type = "character", default = NULL,
               help = "BUSCO full_table.tsv file", metavar = "file.tsv"),
   "-n", "--nigon", type = "character", default = "gene2Nigon_busco20200927.tsv.gz",
@@ -273,6 +274,6 @@ Rscript element_vis.R \
               help = "Threshold from 0-1 for including multiple elements in sequence labels; default = dominant element only", metavar = "float"),
   "--stacked", action = "store_true", default = FALSE,
               help = "Generate a sorted stacked bar plot of physical lengths for elements [default=%default]")
-
+```
 ## Notes
   - Genome-wide FASTA statistics tsv file will still be generated even if you don't give a fasta file input. the file will just contain 'Note No genome FASTA provided'

@@ -1,6 +1,6 @@
 # Elements Visualization Tool
 
-This tool processes BUSCO results and chromosome element assignment files (Nigon, Stevens, or Muller) to generate chromosome visualizations and summary statistics for genome assemblies.
+This tool builds off of the original creator's tool (https://github.com/pgonzale60/vis_ALG), where it processes BUSCO results and chromosome element assignment files (Nigon, Stevens, or Muller) to generate chromosome visualizations and summary statistics for genome assemblies.
 
 ## Overview
 
@@ -15,7 +15,7 @@ Supported element schemes:
 The script can generate:
 
 - **barplots**
-  - Original barplot distribution of the chromosomes (https://github.com/pgonzale60/vis_ALG)
+  - Original barplot distribution of the chromosomes.
   - Shows chromosome composition in genomic windows.
   - Chromosomes are labeled according to their dominant element by default.
   - If a threshold is supplied, chromosomes can be labeled with multiple elements.

@@ -64,17 +64,26 @@ mapFile <- if (!is.null(opt$Stevens)) opt$Stevens else opt$Muller
 message("Using element scheme: ", scheme)
 message("Mapping file: ", mapFile)
 
-# Read element mapping and standardize the first two columns.
-elementDict <- read_tsv(mapFile, col_types = c(col_character(), col_character()), show_col_types = FALSE)
+#Read element mapping
+elementDict <- read_tsv(
+  mapFile,
+  col_types = c(col_character(), col_character()),
+  show_col_types = FALSE
+)
+
 colnames(elementDict)[1:2] <- c("Orthogroups", "Element")
-elementDict <- elementDict %>% select(Orthogroups, Element)
+
+elementDict <- elementDict %>%
+  select(Orthogroups, Element)
 
 # Read BUSCO full table.
 busco <- suppressWarnings(read_tsv(
   opt$busco,
-  col_names = c("Busco_id", "Status", "Sequence",
-                "start", "end", "strand", "Score", "Length",
-                "OrthoDB_url", "Description"),
+  col_names = c(
+    "Busco_id", "Status", "Sequence",
+    "start", "end", "strand", "Score", "Length",
+    "OrthoDB_url", "Description"
+  ),
   col_types = c("ccciicdicc"),
   comment = "#",
   show_col_types = FALSE
@@ -82,12 +91,13 @@ busco <- suppressWarnings(read_tsv(
 
 windwSize <- opt$windowSize
 minimumGenesPerSequence <- opt$minimumGenesPerSequence
+
 spName <- opt$species
 if (grepl("_", spName)) {
   spName <- paste0("*", sub("_", " ", spName), "*")
 }
 
-# Merge BUSCO hits with element mapping.
+#Merge BUSCO hits with element mapping.
 fbusco_all <- busco %>%
   filter(!Status %in% c("Missing")) %>%
   left_join(elementDict, by = c("Busco_id" = "Orthogroups")) %>%
@@ -101,19 +111,20 @@ if (nrow(fbusco_all) == 0) {
   stop("No BUSCO rows matched the supplied element mapping.", call. = FALSE)
 }
 
-# Keep only sequences with enough mapped BUSCO genes for plotting and output.
+#Filter sequence.
 seq_keep <- fbusco_all %>%
   count(Sequence, name = "mapped_busco_genes") %>%
   filter(mapped_busco_genes >= minimumGenesPerSequence) %>%
   pull(Sequence)
 
-fbusco <- fbusco_all %>% filter(Sequence %in% seq_keep)
+fbusco <- fbusco_all %>%
+  filter(Sequence %in% seq_keep)
 
 if (nrow(fbusco) == 0) {
   stop("No sequences passed --minimumGenesPerSequence. Lower -m or check the BUSCO/mapping files.", call. = FALSE)
 }
 
-# Windowed counts per sequence/element.
+#Windowed counts per sequence.
 elementSummary <- fbusco %>%
   group_by(Sequence, Element) %>%
   filter(!is.na(stPos)) %>%
@@ -133,7 +144,7 @@ elementSummary <- fbusco %>%
   count(ints, Element) %>%
   ungroup()
 
-# Aggregate counts and proportions per sequence/element.
+#Aggregate counts and proportions.
 elementAggregated <- fbusco %>%
   count(Sequence, Element, name = "n") %>%
   group_by(Sequence) %>%
@@ -143,7 +154,7 @@ elementAggregated <- fbusco %>%
   ) %>%
   ungroup()
 
-# Coordinate statistics per Sequence/Element.
+#Statistics per Sequence/Element.
 coordinateStats <- fbusco %>%
   group_by(Sequence, Element) %>%
   summarise(
@@ -163,27 +174,48 @@ coordinateStats <- fbusco %>%
 elementAggregatedStats <- elementAggregated %>%
   left_join(coordinateStats, by = c("Sequence", "Element"))
 
-# Optional GC content and real FASTA sequence lengths.
+#GC content and FASTA sequence lengths.
 get_gc_content <- function(dna_string) {
-  Biostrings::letterFrequency(dna_string, letters = c("G", "C"), as.prob = FALSE) %>%
-    sum() -> gc
-  n <- Biostrings::letterFrequency(dna_string, letters = "N", as.prob = FALSE)
+  gc <- Biostrings::letterFrequency(
+    dna_string,
+    letters = c("G", "C"),
+    as.prob = FALSE
+  ) %>%
+    sum()
+
+  n <- Biostrings::letterFrequency(
+    dna_string,
+    letters = "N",
+    as.prob = FALSE
+  )
+
   total <- length(dna_string) - n
+
   ifelse(total > 0, gc / total, NA_real_)
 }
 
 genome_summary <- tibble(Note = "No genome FASTA provided")
+
 if (!is.null(opt$fasta)) {
   if (!requireNamespace("Biostrings", quietly = TRUE)) {
     stop("The Biostrings package is required when using --fasta.", call. = FALSE)
   }
 
   fasta <- Biostrings::readDNAStringSet(opt$fasta)
+
   seq_lengths <- Biostrings::width(fasta)
   gc_vals <- sapply(fasta, get_gc_content)
   valid_gc <- !is.na(gc_vals)
-  gc_counts <- Biostrings::letterFrequency(fasta[valid_gc], letters = c("G", "C"))
-  n_counts <- Biostrings::letterFrequency(fasta[valid_gc], letters = "N")
+
+  gc_counts <- Biostrings::letterFrequency(
+    fasta[valid_gc],
+    letters = c("G", "C")
+  )
+
+  n_counts <- Biostrings::letterFrequency(
+    fasta[valid_gc],
+    letters = "N"
+  )
 
   gc_data <- tibble(
     Sequence = names(fasta),
@@ -225,7 +257,7 @@ if (!is.null(opt$threshold)) {
     rename(DominantElement = Element)
 }
 
-# Color palettes.
+# Color scheme.
 if (scheme == "Stevens") {
   cols <- c(
     "E"    = "#bcb8a7",
@@ -252,21 +284,27 @@ if (scheme == "Stevens") {
 
 usedEls <- intersect(names(cols), unique(fbusco$Element))
 unknownEls <- setdiff(unique(fbusco$Element), names(cols))
+
 cols <- cols[usedEls]
+
 if (length(unknownEls) > 0) {
   cols <- c(cols, setNames(hue_pal()(length(unknownEls)), unknownEls))
 }
 
-# Write summary tables.
 out_prefix <- tools::file_path_sans_ext(opt$tableOutput)
-write_tsv(elementAggregatedStats, opt$tableOutput)
+
+elementAggregatedStats_out <- elementAggregatedStats %>%
+  select(-any_of(c("fasta_seq_length", "GC_content")))
+
+write_tsv(elementAggregatedStats_out, opt$tableOutput)
 write_tsv(elementAggregated, paste0(out_prefix, "_aggregated.tsv"))
 write_tsv(genome_summary, paste0(out_prefix, "_genome_stats.tsv"))
+
 message("Wrote detailed table: ", opt$tableOutput)
 message("Wrote aggregated table: ", paste0(out_prefix, "_aggregated.tsv"))
 message("Wrote genome stats table: ", paste0(out_prefix, "_genome_stats.tsv"))
 
-# Windowed/facet plot.
+# Windowed/original plot.
 if (nrow(elementSummary) > 0) {
   elementSummary <- elementSummary %>%
     left_join(dominantElement, by = "Sequence") %>%
@@ -283,8 +321,13 @@ if (nrow(elementSummary) > 0) {
     geom_bar(position = "stack", stat = "identity") +
     ggtitle(spName) +
     theme_classic() +
-    scale_y_continuous(breaks = scales::pretty_breaks(4), position = "right") +
-    scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+    scale_y_continuous(
+      breaks = scales::pretty_breaks(4),
+      position = "right"
+    ) +
+    scale_x_continuous(
+      labels = scales::label_number(scale_cut = scales::cut_short_scale())
+    ) +
     scale_fill_manual(values = cols) +
     guides(fill = guide_legend(ncol = 1, title = scheme)) +
     theme(
@@ -298,30 +341,54 @@ if (nrow(elementSummary) > 0) {
       plot.background = element_rect(fill = "white", color = NA)
     )
 
-  ggsave(opt$outPlot, plElements, width = opt$width, height = opt$height, bg = "white")
+  ggsave(
+    opt$outPlot,
+    plElements,
+    width = opt$width,
+    height = opt$height,
+    bg = "white"
+  )
+
   message("Wrote facet plot: ", opt$outPlot)
+
 } else {
   warning("No sequence had positions exceeding --windowSize, so the windowed/facet plot was skipped.")
 }
 
-# Stacked physical barplot per chromosome.
+# Stacked barplot per chromosome.
 if (opt$stacked) {
   sequence_coords <- busco %>%
     filter(Sequence %in% elementAggregated$Sequence) %>%
     group_by(Sequence) %>%
-    summarise(max_gene_coordinate = max(end, na.rm = TRUE), .groups = "drop")
+    summarise(
+      max_gene_coordinate = max(end, na.rm = TRUE),
+      .groups = "drop"
+    )
 
   # Use FASTA lengths for stacked bar heights when available; otherwise use max BUSCO coordinate.
   if (!is.null(opt$fasta) && exists("gc_data")) {
     sequence_coords <- sequence_coords %>%
-      left_join(gc_data %>% select(Sequence, fasta_seq_length), by = "Sequence") %>%
-      mutate(chrom_length = ifelse(!is.na(fasta_seq_length), fasta_seq_length, max_gene_coordinate))
+      left_join(
+        gc_data %>% select(Sequence, fasta_seq_length),
+        by = "Sequence"
+      ) %>%
+      mutate(
+        chrom_length = ifelse(
+          !is.na(fasta_seq_length),
+          fasta_seq_length,
+          max_gene_coordinate
+        )
+      )
   } else {
-    sequence_coords <- sequence_coords %>% mutate(chrom_length = max_gene_coordinate)
+    sequence_coords <- sequence_coords %>%
+      mutate(chrom_length = max_gene_coordinate)
   }
 
   df <- elementAggregated %>%
-    left_join(sequence_coords %>% select(Sequence, chrom_length), by = "Sequence") %>%
+    left_join(
+      sequence_coords %>% select(Sequence, chrom_length),
+      by = "Sequence"
+    ) %>%
     mutate(
       segment_height = proportion * chrom_length,
       physical_proportion = segment_height / chrom_length
@@ -335,19 +402,25 @@ if (opt$stacked) {
     ) %>%
     ungroup() %>%
     left_join(dominantElement, by = "Sequence") %>%
-    mutate(SequenceRenamed = paste0(Sequence, " [", DominantElement, "]"))
+    mutate(
+      SequenceRenamed = paste0(Sequence, " [", DominantElement, "]")
+    )
 
   x_levels <- mixedsort(unique(df$SequenceRenamed))
 
-  df <- df %>% mutate(x = as.numeric(factor(SequenceRenamed, levels = x_levels)))
+  df <- df %>%
+    mutate(x = as.numeric(factor(SequenceRenamed, levels = x_levels)))
 
-  plElementsStacked <- ggplot(df, aes(
-    xmin = x - 0.4,
-    xmax = x + 0.4,
-    ymin = ymin_bp,
-    ymax = ymax_bp,
-    fill = Element
-  )) +
+  plElementsStacked <- ggplot(
+    df,
+    aes(
+      xmin = x - 0.4,
+      xmax = x + 0.4,
+      ymin = ymin_bp,
+      ymax = ymax_bp,
+      fill = Element
+    )
+  ) +
     geom_rect(color = NA) +
     scale_x_continuous(
       breaks = seq_along(x_levels),
@@ -385,5 +458,6 @@ if (opt$stacked) {
     dpi = 300,
     bg = "white"
   )
+
   message("Wrote stacked plot: ", opt$stackedOutPlot)
 }

@@ -100,7 +100,7 @@ Contains:
 
 
 ### 3. `element_breakdown_genome_stats.tsv`
-Generated only when `--fasta` is supplied.
+Generated only when `--fasta` or `-f` is supplied.
 
 Genome-wide assembly summary statistics:
 - total assembly length
@@ -114,7 +114,7 @@ Genome-wide assembly summary statistics:
 
 
 
-## FASTA Option (`--fasta`)
+## FASTA Option (`-f`, `--fasta`)
 
 Providing a FASTA file enables:
 
@@ -190,7 +190,7 @@ Rscript element_vis.R \
     --stackedOutPlot output_stacked.png
 ```
 
-### Use FASTA for genome stats + true chromosome lengths
+### Use FASTA for genome stats + chromosome lengths
 ```bash
 Rscript element_vis.R \
     -b full_table.tsv \

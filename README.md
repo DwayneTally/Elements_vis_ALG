@@ -1,6 +1,6 @@
 # Elements Visualization Tool
 
-This tool builds off of the original creator's tool (https://github.com/pgonzale60/vis_ALG), where it processes BUSCO results and chromosome element assignment files (Nigon, Stevens, or Muller) to generate chromosome visualizations and summary statistics for genome assemblies.
+This tool builds off of the original creator's tool (https://github.com/pgonzale60/vis_ALG), where it processes BUSCO results and originally assigned Nigon elements (Now includes Stevens or Muller elements) to generate chromosome visualizations and summary statistics for genome assemblies.
 
 ## Overview
 
@@ -35,9 +35,6 @@ The script can generate:
   - Detailed per-sequence element breakdown
   - Aggregated chromosome composition
   - Genome-wide FASTA statistics (when FASTA provided)
-
-The default Stevens color palette are consistent in previous studies (Bracewell et al 2024).
-
 
 
 ## Threshold Behavior

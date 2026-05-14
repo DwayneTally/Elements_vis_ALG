@@ -36,6 +36,39 @@ The script can generate:
   - Aggregated chromosome composition
   - Genome-wide FASTA statistics (when FASTA provided)
 
+## Installation
+
+Create a conda environment:
+
+```bash
+ENV_NAME=element_vis
+
+conda create -n $ENV_NAME \
+    -c conda-forge \
+    -c bioconda \
+    r-base \
+    r-optparse \
+    r-readr \
+    r-dplyr \
+    r-scales \
+    r-ggplot2 \
+    r-gtools \
+    r-ggtext \
+    bioconductor-biostrings \
+    -y
+
+conda activate $ENV_NAME
+```
+
+Required R packages:
+- optparse
+- readr
+- dplyr
+- scales
+- ggplot2
+- gtools
+- ggtext
+- Biostrings (only required for `--fasta`)
 
 ## Threshold Behavior
 
@@ -125,41 +158,6 @@ Providing a FASTA file enables:
 If no FASTA is supplied:
 - stacked plots use BUSCO maximum gene coordinates as chromosome lengths
 - genome summary statistics are not calculated
-
-
-## Installation
-
-Create a conda environment:
-
-```bash
-ENV_NAME=element_vis
-
-conda create -n $ENV_NAME \
-    -c conda-forge \
-    -c bioconda \
-    r-base \
-    r-optparse \
-    r-readr \
-    r-dplyr \
-    r-scales \
-    r-ggplot2 \
-    r-gtools \
-    r-ggtext \
-    bioconductor-biostrings \
-    -y
-
-conda activate $ENV_NAME
-```
-
-Required R packages:
-- optparse
-- readr
-- dplyr
-- scales
-- ggplot2
-- gtools
-- ggtext
-- Biostrings (only required for `--fasta`)
 
 
 

@@ -212,18 +212,18 @@ Rscript element_vis.R \
 
 ### Standard Stevens visualization
 ```bash
-Rscript element_vis.R \
-    -b ../Example/BUSCO/full_table.tsv \
-    -c ../data/stevens.tsv \
+Rscript Scripts/element_vis.R \
+    -b ./Example/BUSCO/full_table.tsv \
+    -c ./data/stevens.tsv \
     -s T.castaneum \
     -o T.castaneum.jpeg
 ```
 
 ### Stacked plot with threshold labeling
 ```bash
-Rscript element_vis.R \
-    -b ../Example/BUSCO/full_table.tsv \
-    -c ../data/stevens.tsv \
+Rscript Scripts/element_vis.R \
+    -b ./Example/BUSCO/full_table.tsv \
+    -c ./data/stevens.tsv \
     -s T.castaneum \
     --stacked \
     --stackedOutPlot T.castaneum_stacked.png \
@@ -232,11 +232,11 @@ Rscript element_vis.R \
 
 ### FASTA-enabled genome summary
 ```bash
-Rscript element_vis.R \
-    -b ../Example/BUSCO/full_table.tsv \
-    -c ../data/stevens.tsv \
+Rscript Scripts/element_vis.R \
+    -b ./Example/BUSCO/full_table.tsv \
+    -c ./data/stevens.tsv \
     -s T.castaneum \
-    --fasta Tribolium_castaneum_GCF_000002335.3_genomic.fna
+    --fasta ./Example/fna/Tribolium_castaneum_GCF_000002335.3_genomic.fna
 ```
 
 ## Options

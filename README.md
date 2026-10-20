@@ -68,7 +68,7 @@ Required R packages:
 - ggplot2
 - gtools
 - ggtext
-- Biostrings (only required for `--fasta`)
+- Biostrings
 
 ## Threshold Behavior
 
@@ -82,8 +82,8 @@ With `--threshold`, any element meeting that proportion threshold is included.
 Example:
 
 If a chromosome contains:
-- 90% Stevens B
-- 10% Stevens X
+- 10% Stevens B
+- 90% Stevens X
 
 Then:
 
